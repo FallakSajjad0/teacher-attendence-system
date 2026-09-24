@@ -1,0 +1,3 @@
+const jwt=require('jsonwebtoken'); const User=require('../models/User');
+const authenticate=async(req,res,next)=>{try{const h=req.headers.authorization||'';if(!h.startsWith('Bearer '))return res.status(401).json({success:false,message:'Authentication required'});const p=jwt.verify(h.slice(7),process.env.JWT_SECRET);const user=await User.findById(p.id);if(!user||!user.is_active)return res.status(401).json({success:false,message:'Invalid or inactive account'});req.user=user;next();}catch(e){return res.status(401).json({success:false,message:'Invalid or expired token'});}};
+module.exports={authenticate};

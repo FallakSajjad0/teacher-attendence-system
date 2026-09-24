@@ -1,0 +1,1 @@
+const r=require('express').Router(),c=require('../controllers/photoController'),{authenticate}=require('../middleware/auth'),{isManagement}=require('../middleware/roleCheck');r.use(authenticate);r.get('/pending',isManagement,c.getPendingPhotos);r.get('/class/:classId',c.getPhotosByClass);r.get('/:id',c.getPhotoById);module.exports=r;

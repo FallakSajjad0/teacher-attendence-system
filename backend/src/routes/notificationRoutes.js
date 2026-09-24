@@ -1,0 +1,1 @@
+const r=require('express').Router(),c=require('../controllers/notificationController'),{authenticate}=require('../middleware/auth');r.use(authenticate);r.get('/',c.getMyNotifications);r.get('/unread-count',c.getUnreadCount);r.get('/class/:classId',c.getNotificationsByClass);r.put('/:id/read',c.markAsRead);r.put('/read-all',c.markAllAsRead);module.exports=r;

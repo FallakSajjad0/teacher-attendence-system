@@ -1,0 +1,1 @@
+const {Server}=require('socket.io');let io;const initializeSocket=server=>{io=new Server(server,{cors:{origin:'*'}});io.on('connection',socket=>{socket.on('join_room',room=>socket.join(room));socket.on('leave_room',room=>socket.leave(room));});};const getIO=()=>io;module.exports={initializeSocket,getIO};

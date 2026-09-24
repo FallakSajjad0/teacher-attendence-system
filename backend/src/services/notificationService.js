@@ -1,0 +1,1 @@
+const N=require('../models/Notification');exports.createAndSendNotification=async x=>N.create({...x,status:'sent',sentAt:new Date()});exports.markNotificationAsRead=(id,userId)=>N.read(id,userId);exports.getUserNotifications=(id,o)=>N.list(id,o);

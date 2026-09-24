@@ -1,0 +1,1 @@
+const Photo=require('../models/Photo');exports.createPhoto=x=>Photo.create(x);exports.getPendingPhotos=()=>Photo.pending();exports.getPhotosByClass=id=>Photo.byClass(id);

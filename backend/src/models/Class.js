@@ -1,0 +1,9 @@
+const {pool}=require('../config/database');
+const ClassModel={
+ async findById(id){const r=await pool.query(`SELECT c.*,u.name AS teacher_name,u.email AS teacher_email FROM classes c LEFT JOIN users u ON u.id=c.teacher_id WHERE c.id=$1`,[id]);return r.rows[0]||null;},
+ async list({teacherId,from,to}={}){const v=[];let q=`SELECT c.*,u.name AS teacher_name,u.email AS teacher_email FROM classes c LEFT JOIN users u ON u.id=c.teacher_id WHERE c.is_active=true`;if(teacherId){v.push(teacherId);q+=` AND c.teacher_id=$${v.length}`;}if(from){v.push(from);q+=` AND c.start_time >= $${v.length}`;}if(to){v.push(to);q+=` AND c.start_time <= $${v.length}`;}q+=' ORDER BY c.start_time';return (await pool.query(q,v)).rows;},
+ async create(x){const r=await pool.query(`INSERT INTO classes(subject,code,teacher_id,room,start_time,end_time,classroom_latitude,classroom_longitude,radius_meters,is_active) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,[x.subject,x.code||null,x.teacherId,x.room||null,x.startTime,x.endTime,x.latitude,x.longitude,x.radiusMeters||Number(process.env.CLASSROOM_RADIUS_METERS||100),x.isActive!==false]);return r.rows[0];},
+ async update(id,x){const map={subject:x.subject,code:x.code,teacher_id:x.teacherId,room:x.room,start_time:x.startTime,end_time:x.endTime,classroom_latitude:x.latitude,classroom_longitude:x.longitude,radius_meters:x.radiusMeters,is_active:x.isActive};const entries=Object.entries(map).filter(([,v])=>v!==undefined);if(!entries.length)return this.findById(id);const vals=entries.map(([,v])=>v);const sets=entries.map(([k],i)=>`${k}=$${i+1}`).join(',');vals.push(id);return (await pool.query(`UPDATE classes SET ${sets},updated_at=NOW() WHERE id=$${vals.length} RETURNING *`,vals)).rows[0]||null;},
+ async delete(id){await pool.query('DELETE FROM classes WHERE id=$1',[id]);}
+};
+module.exports=ClassModel;
